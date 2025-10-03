@@ -27,7 +27,7 @@ class LibreSpeed {
         "https://httpbin.org/bytes" // For download testing
       ];
       this.backend = opts.backend || this.backends[0];
-      this.uploadSize = opts.uploadSize || 2 * 1024 * 1024; // 2MB
+      this.uploadSize = opts.uploadSize || 512 * 1024; // 512KB (more reasonable for testing)
       this.downloadSize = opts.downloadSize || 5; // MB (for garbage.php)
       this.pingSamples = opts.pingSamples || 5;
     }
@@ -121,8 +121,15 @@ class LibreSpeed {
     }
   
     async testUpload() {
+      // Generate data in chunks to avoid crypto quota limit
+      const chunkSize = 65536; // Max allowed by crypto.getRandomValues
       const data = new Uint8Array(this.uploadSize);
-      crypto.getRandomValues(data);
+      
+      for (let i = 0; i < this.uploadSize; i += chunkSize) {
+        const end = Math.min(i + chunkSize, this.uploadSize);
+        const chunk = data.subarray(i, end);
+        crypto.getRandomValues(chunk);
+      }
   
       const uploadTargets = [
         'https://httpbin.org/post',

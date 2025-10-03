@@ -148,8 +148,7 @@
                 const measureUpload = true; // Always test upload for complete results
 
                 this.tester = new window.LibreSpeed({
-                    backend: "https://librespeed.org/backend",
-                    uploadSize: 2 * 1024 * 1024, // 2MB
+                    uploadSize: 512 * 1024, // 512KB (faster testing)
                     downloadSize: 5, // 5MB
                     pingSamples: 5
                 });
