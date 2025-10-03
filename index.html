@@ -107,10 +107,44 @@
             }
 
             updateProgress(progress) {
-                if (progress.percent) {
-                    this.progressBar.style.width = `${progress.percent}%`;
-                    this.progressContainer.classList.remove('hidden');
+                console.log('Progress:', progress);
+                
+                if (progress.stage === 'complete') {
+                    this.isRunning = false;
+                    this.startBtn.disabled = false;
+                    this.startBtn.textContent = 'Start Speed Test';
+                    this.stopBtn.disabled = true;
+                    this.progressContainer.classList.add('hidden');
+                    this.displayResults(progress.result);
+                    return;
                 }
+                
+                if (progress.stage === 'error') {
+                    this.isRunning = false;
+                    this.startBtn.disabled = false;
+                    this.startBtn.textContent = 'Start Speed Test';
+                    this.stopBtn.disabled = true;
+                    this.progressContainer.classList.add('hidden');
+                    this.showError(progress.message);
+                    return;
+                }
+                
+                this.progressContainer.classList.remove('hidden');
+                this.progressBar.style.width = '100%';
+                
+                // Update status message with progress message if available
+                if (progress.message) {
+                    this.status.textContent = progress.message;
+                } else {
+                    const statusMessages = {
+                        'ip': '🌐 Detecting IP address...',
+                        'ping': '🏓 Testing latency...',
+                        'download': '⬇️ Testing download speed...',
+                        'upload': '⬆️ Testing upload speed...'
+                    };
+                    this.status.textContent = statusMessages[progress.stage] || 'Testing...';
+                }
+                this.status.className = 'status info';
             }
 
             updateSpeed(mbps) {
