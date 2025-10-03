@@ -27,16 +27,25 @@ class LibreSpeed {
         "https://httpbin.org/bytes" // For download testing
       ];
       this.backend = opts.backend || this.backends[0];
-      this.uploadSize = opts.uploadSize || 512 * 1024; // 512KB (more reasonable for testing)
-      this.downloadSize = opts.downloadSize || 5; // MB (for garbage.php)
-      this.pingSamples = opts.pingSamples || 5;
+      this.uploadSize = opts.uploadSize || 256 * 1024; // 256KB (faster testing)
+      this.downloadSize = opts.downloadSize || 2; // 2MB (faster testing)
+      this.pingSamples = opts.pingSamples || 3; // 3 samples (faster)
     }
   
-    async _fetchWithTime(url, options = {}) {
+    async _fetchWithTime(url, options = {}, timeout = 10000) {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), timeout);
+      
       const start = performance.now();
-      const res = await fetch(url, options);
-      const end = performance.now();
-      return { res, duration: end - start };
+      try {
+        const res = await fetch(url, { ...options, signal: controller.signal });
+        clearTimeout(timeoutId);
+        const end = performance.now();
+        return { res, duration: end - start };
+      } catch (e) {
+        clearTimeout(timeoutId);
+        throw e;
+      }
     }
   
     async getIP() {
@@ -55,7 +64,8 @@ class LibreSpeed {
             mode: 'cors',
             headers: {
               'Accept': 'application/json'
-            }
+            },
+            signal: AbortSignal.timeout(5000) // 5 second timeout
           });
           if (r.ok) {
             const data = await r.json();
@@ -81,11 +91,11 @@ class LibreSpeed {
     }
   
     async testDownload() {
-      // Try multiple download sources that work with localhost
+      // Use smaller, more accurate download sources
       const downloadSources = [
         `https://httpbin.org/bytes/${this.downloadSize * 1024 * 1024}`,
+        `https://httpbin.org/stream-bytes/${this.downloadSize * 1024 * 1024}`,
         `https://jsonplaceholder.typicode.com/posts`,
-        `https://api.github.com/repos/microsoft/vscode`,
         `https://httpbin.org/json`
       ];
       
@@ -95,7 +105,8 @@ class LibreSpeed {
           const start = performance.now();
           const r = await fetch(source, { 
             cache: "no-store",
-            mode: 'cors'
+            mode: 'cors',
+            signal: AbortSignal.timeout(8000) // 8 second timeout
           });
           const blob = await r.blob();
           const end = performance.now();
@@ -144,7 +155,8 @@ class LibreSpeed {
           const r = await fetch(target, {
             method: "POST",
             body: data,
-            mode: 'cors'
+            mode: 'cors',
+            signal: AbortSignal.timeout(8000) // 8 second timeout
           });
           const end = performance.now();
       
@@ -182,11 +194,11 @@ class LibreSpeed {
             const { duration } = await this._fetchWithTime(`${target}?x=${Math.random()}`, { 
               cache: "no-store",
               mode: 'cors'
-            });
+            }, 5000); // 5 second timeout for ping
             samples.push(duration);
             success = true;
             break;
-          } catch (e) {
+      } catch (e) {
             continue;
           }
         }

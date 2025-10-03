@@ -12,9 +12,27 @@
         <div class="subtitle">High-Speed Internet Test Website</div>
         
         <div class="test-area">
-            <div id="speedDisplay" class="speed-display">
-                <span id="speedValue">0</span>
-                <span class="unit">Mbps</span>
+            <div id="speedDisplay" class="speedometer-container">
+                <div class="speedometer">
+                    <div class="speedometer-inner">
+                        <div class="speedometer-needle" id="speedometerNeedle"></div>
+                        <div class="speedometer-center"></div>
+                    </div>
+                    <div class="speedometer-labels">
+                        <span class="label-0">0</span>
+                        <span class="label-25">25</span>
+                        <span class="label-50">50</span>
+                        <span class="label-75">75</span>
+                        <span class="label-100">100</span>
+                        <span class="label-125">125</span>
+                        <span class="label-150">150</span>
+                        <span class="label-200">200</span>
+                    </div>
+                </div>
+                <div class="speed-display">
+                    <span id="speedValue">0</span>
+                    <span class="unit">Mbps</span>
+                </div>
             </div>
             
             <div id="status" class="status info">🚀 Click Start to begin your speed test</div>
@@ -98,6 +116,50 @@
             updateSpeed(mbps) {
                 this.speedValue.textContent = mbps.toFixed(1);
                 this.speedDisplay.classList.remove('hidden');
+                this.animateSpeedometer(mbps);
+            }
+
+            resetSpeedometer() {
+                const needle = document.getElementById('speedometerNeedle');
+                if (!needle) return;
+
+                // Reset to 0 position
+                needle.style.transform = 'rotate(-90deg)';
+                needle.style.background = 'linear-gradient(to bottom, #333, #666)';
+                needle.style.transition = 'transform 0.5s ease-out';
+                
+                // Reset speed display
+                this.speedValue.textContent = '0';
+            }
+
+            animateSpeedometer(mbps) {
+                const needle = document.getElementById('speedometerNeedle');
+                if (!needle) return;
+
+                // Convert Mbps to degrees (0-200 Mbps range)
+                // -90deg to 90deg rotation (180 degrees total)
+                const maxSpeed = 200;
+                const clampedSpeed = Math.min(mbps, maxSpeed);
+                const percentage = clampedSpeed / maxSpeed;
+                const degrees = -90 + (percentage * 180);
+                
+                needle.style.transform = `rotate(${degrees}deg)`;
+                
+                // Add a little bounce effect
+                needle.style.transition = 'transform 1s cubic-bezier(0.4, 0, 0.2, 1)';
+                
+                // Change needle color based on speed
+                if (mbps < 25) {
+                    needle.style.background = 'linear-gradient(to bottom, #ff4444, #ff6666)';
+                } else if (mbps < 50) {
+                    needle.style.background = 'linear-gradient(to bottom, #ffaa44, #ffcc66)';
+                } else if (mbps < 100) {
+                    needle.style.background = 'linear-gradient(to bottom, #ffdd44, #ffee66)';
+                } else if (mbps < 150) {
+                    needle.style.background = 'linear-gradient(to bottom, #aaff44, #ccff66)';
+                } else {
+                    needle.style.background = 'linear-gradient(to bottom, #44ff44, #66ff66)';
+                }
             }
 
             displayResults(result) {
@@ -142,15 +204,18 @@
                 this.results.classList.add('hidden');
                 this.speedDisplay.classList.remove('hidden');
                 this.progressContainer.classList.add('hidden');
+                
+                // Reset speedometer
+                this.resetSpeedometer();
 
                 // Use sensible defaults for better user experience
                 const urlCount = 6; // Good balance of accuracy and speed
                 const measureUpload = true; // Always test upload for complete results
 
                 this.tester = new window.LibreSpeed({
-                    uploadSize: 512 * 1024, // 512KB (faster testing)
-                    downloadSize: 5, // 5MB
-                    pingSamples: 5
+                    uploadSize: 256 * 1024, // 256KB (faster testing)
+                    downloadSize: 2, // 2MB (faster testing)
+                    pingSamples: 3 // 3 samples (faster)
                 });
 
                 try {
@@ -189,17 +254,18 @@
                         this.showStatus('🌐 Getting IP address...', 'info');
                         break;
                     case 'ping':
-                        this.showStatus('📡 Measuring ping...', 'info');
+                        this.showStatus('📡 Measuring ping (3 samples)...', 'info');
                         break;
                     case 'download':
-                        this.showStatus('⬇️ Testing download speed...', 'info');
+                        this.showStatus('⬇️ Testing download speed (2MB)...', 'info');
                         this.progressContainer.classList.remove('hidden');
                         break;
                     case 'upload':
-                        this.showStatus('⬆️ Testing upload speed...', 'info');
+                        this.showStatus('⬆️ Testing upload speed (256KB)...', 'info');
                         break;
                     case 'complete':
                         this.showStatus('🎉 Speed test completed!', 'success');
+                        this.progressContainer.classList.add('hidden');
                         break;
                 }
             }
