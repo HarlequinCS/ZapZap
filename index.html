@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ZapZap Speedtest Website</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <div class="logo">⚡ ZapZap</div>
+        <div class="subtitle">High-Speed Internet Test Website</div>
+        
+        <div class="test-area">
+            <div id="speedDisplay" class="speed-display">
+                <span id="speedValue">0</span>
+                <span class="unit">Mbps</span>
+            </div>
+            
+            <div id="status" class="status info">🚀 Click Start to begin your speed test</div>
+            
+            <div id="progressContainer" class="progress-container hidden">
+                <div id="progressBar" class="progress-bar"></div>
+            </div>
+            
+            <button id="startTest" class="test-button">Start Speed Test</button>
+            <button id="stopTest" class="test-button" disabled>Stop Test</button>
+        </div>
+
+        <div id="results" class="results hidden">
+            <h3>Test Results</h3>
+            <div id="resultContent"></div>
+        </div>
+
+        <div id="errorContainer" class="hidden">
+            <div id="errorMessage" class="error-message"></div>
+        </div>
+    </div>
+
+    <script src="zap.js"></script>
+    <script>
+        class ZapZapSpeedTest {
+            constructor() {
+                this.tester = null;
+                this.isRunning = false;
+                this.initializeElements();
+                this.bindEvents();
+            }
+
+            initializeElements() {
+                this.startBtn = document.getElementById('startTest');
+                this.stopBtn = document.getElementById('stopTest');
+                this.status = document.getElementById('status');
+                this.progressContainer = document.getElementById('progressContainer');
+                this.progressBar = document.getElementById('progressBar');
+                this.speedDisplay = document.getElementById('speedDisplay');
+                this.speedValue = document.getElementById('speedValue');
+                this.results = document.getElementById('results');
+                this.resultContent = document.getElementById('resultContent');
+                this.errorContainer = document.getElementById('errorContainer');
+                this.errorMessage = document.getElementById('errorMessage');
+            }
+
+            bindEvents() {
+                this.startBtn.addEventListener('click', () => {
+                    console.log('Start button clicked!');
+                    this.startTest();
+                });
+                this.stopBtn.addEventListener('click', () => {
+                    console.log('Stop button clicked!');
+                    this.stopTest();
+                });
+            }
+
+            showStatus(message, type = 'info') {
+                this.status.textContent = message;
+                this.status.className = `status ${type}`;
+                this.status.classList.remove('hidden');
+            }
+
+            showError(message) {
+                this.errorMessage.textContent = message;
+                this.errorContainer.classList.remove('hidden');
+                this.results.classList.add('hidden');
+            }
+
+            hideError() {
+                this.errorContainer.classList.add('hidden');
+            }
+
+            updateProgress(progress) {
+                if (progress.percent) {
+                    this.progressBar.style.width = `${progress.percent}%`;
+                    this.progressContainer.classList.remove('hidden');
+                }
+            }
+
+            updateSpeed(mbps) {
+                this.speedValue.textContent = mbps.toFixed(1);
+                this.speedDisplay.classList.remove('hidden');
+            }
+
+            displayResults(result) {
+                const content = `
+                    <div class="result-item">
+                        <span class="result-label">Download Speed:</span>
+                        <span class="result-value">${result.download.mbps.toFixed(1)} Mbps</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">Upload Speed:</span>
+                        <span class="result-value">${result.upload.mbps.toFixed(1)} Mbps</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">Ping:</span>
+                        <span class="result-value">${result.ping.avgMs.toFixed(0)} ms</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">IP Address:</span>
+                        <span class="result-value">${result.ip.ip || 'N/A'}</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">ISP:</span>
+                        <span class="result-value">${result.ip.isp || 'N/A'}</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">Test Time:</span>
+                        <span class="result-value">${new Date(result.timestamp).toLocaleString()}</span>
+                    </div>
+                `;
+                this.resultContent.innerHTML = content;
+                this.results.classList.remove('hidden');
+            }
+
+            async startTest() {
+                if (this.isRunning) return;
+
+                this.isRunning = true;
+                this.startBtn.disabled = true;
+                this.startBtn.textContent = 'Start Speed Test'; // Reset button text
+                this.stopBtn.disabled = false;
+                this.hideError();
+                this.results.classList.add('hidden');
+                this.speedDisplay.classList.remove('hidden');
+                this.progressContainer.classList.add('hidden');
+
+                // Use sensible defaults for better user experience
+                const urlCount = 6; // Good balance of accuracy and speed
+                const measureUpload = true; // Always test upload for complete results
+
+                this.tester = new window.LibreSpeed({
+                    backend: "https://librespeed.org/backend",
+                    uploadSize: 2 * 1024 * 1024, // 2MB
+                    downloadSize: 5, // 5MB
+                    pingSamples: 5
+                });
+
+                try {
+                    this.showStatus('🚀 Initializing speed test...', 'info');
+                    
+                    const result = await this.tester.run({
+                        onProgress: (progress) => {
+                            this.handleProgress(progress);
+                        }
+                    });
+
+                    this.displayResults(result);
+                    this.updateSpeed(result.download.mbps);
+                    this.showStatus('Speed test completed successfully!', 'success');
+                    
+                } catch (error) {
+                    console.error('Speed test error:', error);
+                    this.showError(`Speed test failed: ${error.message}`);
+                    this.showStatus('❌ Speed test failed - Click Start to try again', 'error');
+                    
+                    // Add retry button
+                    this.startBtn.textContent = '🔄 Retry Speed Test';
+                } finally {
+                    this.isRunning = false;
+                    this.startBtn.disabled = false;
+                    this.stopBtn.disabled = true;
+                    this.progressContainer.classList.add('hidden');
+                }
+            }
+
+            handleProgress(progress) {
+                console.log('Progress:', progress);
+                
+                switch (progress.stage) {
+                    case 'ip':
+                        this.showStatus('🌐 Getting IP address...', 'info');
+                        break;
+                    case 'ping':
+                        this.showStatus('📡 Measuring ping...', 'info');
+                        break;
+                    case 'download':
+                        this.showStatus('⬇️ Testing download speed...', 'info');
+                        this.progressContainer.classList.remove('hidden');
+                        break;
+                    case 'upload':
+                        this.showStatus('⬆️ Testing upload speed...', 'info');
+                        break;
+                    case 'complete':
+                        this.showStatus('🎉 Speed test completed!', 'success');
+                        break;
+                }
+            }
+
+            stopTest() {
+                if (this.tester) {
+                    this.tester.cancel();
+                }
+                this.isRunning = false;
+                this.startBtn.disabled = false;
+                this.stopBtn.disabled = true;
+                this.showStatus('Test stopped by user', 'info');
+                this.progressContainer.classList.add('hidden');
+            }
+
+        }
+
+        // Initialize the speed test app
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('DOM loaded, initializing ZapZap SpeedTest...');
+            console.log('LibreSpeed available:', typeof window.LibreSpeed);
+            console.log('window.LibreSpeed:', window.LibreSpeed);
+            console.log('testLibreSpeed available:', typeof window.testLibreSpeed);
+            if (typeof window.testLibreSpeed === 'function') {
+                console.log('Test function result:', window.testLibreSpeed());
+            }
+            console.log('All window properties:', Object.keys(window).filter(k => k.includes('Libre') || k.includes('Speed')));
+            
+            // Wait a bit for script to load
+            setTimeout(() => {
+                if (typeof window.LibreSpeed === 'undefined') {
+                    console.error('LibreSpeed not loaded! Check if zap.js is loading correctly.');
+                    console.log('Available window properties:', Object.keys(window).filter(k => k.includes('Libre') || k.includes('Speed')));
+                    alert('Error: LibreSpeed not loaded. Please check the browser console for details.');
+                    return;
+                }
+                
+                new ZapZapSpeedTest();
+            }, 100);
+        });
+    </script>
+</body>
+</html>
