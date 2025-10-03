@@ -57,7 +57,7 @@
 
     <script src="zap.js"></script>
     <script>
-        class ZapZapSpeedTest {
+        class ZapZapSpeedTestUI {
             constructor() {
                 this.tester = null;
                 this.isRunning = false;
@@ -246,7 +246,7 @@
                 const urlCount = 6; // Good balance of accuracy and speed
                 const measureUpload = true; // Always test upload for complete results
 
-                this.tester = new window.LibreSpeed({
+                this.tester = new window.ZapZapSpeedTest({
                     uploadSize: 256 * 1024, // 256KB (faster testing)
                     downloadSize: 2, // 2MB (faster testing)
                     pingSamples: 3 // 3 samples (faster)
@@ -320,24 +320,24 @@
         // Initialize the speed test app
         document.addEventListener('DOMContentLoaded', () => {
             console.log('DOM loaded, initializing ZapZap SpeedTest...');
-            console.log('LibreSpeed available:', typeof window.LibreSpeed);
-            console.log('window.LibreSpeed:', window.LibreSpeed);
-            console.log('testLibreSpeed available:', typeof window.testLibreSpeed);
-            if (typeof window.testLibreSpeed === 'function') {
-                console.log('Test function result:', window.testLibreSpeed());
+            console.log('ZapZapSpeedTest available:', typeof window.ZapZapSpeedTest);
+            console.log('window.ZapZapSpeedTest:', window.ZapZapSpeedTest);
+            console.log('testZapZapSpeedTest available:', typeof window.testZapZapSpeedTest);
+            if (typeof window.testZapZapSpeedTest === 'function') {
+                console.log('Test function result:', window.testZapZapSpeedTest());
             }
-            console.log('All window properties:', Object.keys(window).filter(k => k.includes('Libre') || k.includes('Speed')));
+            console.log('All window properties:', Object.keys(window).filter(k => k.includes('ZapZap') || k.includes('Speed')));
             
             // Wait a bit for script to load
             setTimeout(() => {
-                if (typeof window.LibreSpeed === 'undefined') {
-                    console.error('LibreSpeed not loaded! Check if zap.js is loading correctly.');
-                    console.log('Available window properties:', Object.keys(window).filter(k => k.includes('Libre') || k.includes('Speed')));
-                    alert('Error: LibreSpeed not loaded. Please check the browser console for details.');
+                if (typeof window.ZapZapSpeedTest === 'undefined') {
+                    console.error('ZapZapSpeedTest not loaded! Check if zap.js is loading correctly.');
+                    console.log('Available window properties:', Object.keys(window).filter(k => k.includes('ZapZap') || k.includes('Speed')));
+                    alert('Error: ZapZapSpeedTest not loaded. Please check the browser console for details.');
                     return;
                 }
                 
-                new ZapZapSpeedTest();
+                new ZapZapSpeedTestUI();
             }, 100);
         });
     </script>
