@@ -5,30 +5,51 @@
 }
 
 body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
     min-height: 100vh;
     display: flex;
     align-items: center;
     justify-content: center;
     padding: 20px;
+    position: relative;
+    overflow-x: hidden;
+}
+
+body::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="25" cy="25" r="1" fill="white" opacity="0.1"/><circle cx="75" cy="75" r="1" fill="white" opacity="0.1"/><circle cx="50" cy="10" r="0.5" fill="white" opacity="0.1"/><circle cx="10" cy="60" r="0.5" fill="white" opacity="0.1"/><circle cx="90" cy="40" r="0.5" fill="white" opacity="0.1"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
+    pointer-events: none;
 }
 
 .container {
-    background: white;
-    border-radius: 20px;
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
-    padding: 40px;
-    max-width: 600px;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(20px);
+    border-radius: 24px;
+    box-shadow: 0 32px 64px rgba(0, 0, 0, 0.15), 0 0 0 1px rgba(255, 255, 255, 0.2);
+    padding: 48px;
+    max-width: 700px;
     width: 100%;
     text-align: center;
+    position: relative;
+    z-index: 1;
+    border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 .logo {
-    font-size: 2.5rem;
-    font-weight: bold;
-    color: #667eea;
-    margin-bottom: 10px;
+    font-size: 3rem;
+    font-weight: 800;
+    background: linear-gradient(135deg, #667eea, #764ba2, #f093fb);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 16px;
+    letter-spacing: -0.02em;
 }
 
 .subtitle {
@@ -38,21 +59,40 @@ body {
 }
 
 .test-button {
-    background: linear-gradient(45deg, #667eea, #764ba2);
+    background: linear-gradient(135deg, #667eea, #764ba2, #f093fb);
     color: white;
     border: none;
-    padding: 15px 40px;
-    font-size: 1.2rem;
-    border-radius: 50px;
+    padding: 18px 48px;
+    font-size: 1.3rem;
+    font-weight: 600;
+    border-radius: 60px;
     cursor: pointer;
-    transition: all 0.3s ease;
-    margin: 10px;
-    min-width: 150px;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    margin: 12px;
+    min-width: 180px;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 8px 32px rgba(102, 126, 234, 0.3);
+}
+
+.test-button::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left 0.5s;
+}
+
+.test-button:hover::before {
+    left: 100%;
 }
 
 .test-button:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+    transform: translateY(-4px) scale(1.02);
+    box-shadow: 0 16px 48px rgba(102, 126, 234, 0.4);
 }
 
 .test-button:disabled {
@@ -143,9 +183,16 @@ body {
 
 .speedometer {
     position: relative;
-    width: 300px;
-    height: 300px;
-    margin-bottom: 20px;
+    width: 400px;
+    height: 400px;
+    margin: 40px auto;
+    filter: drop-shadow(0 0 50px rgba(0, 255, 255, 0.3));
+    background: radial-gradient(circle at center, rgba(0, 0, 0, 0.8) 0%, rgba(0, 0, 0, 0.95) 100%);
+    border-radius: 50%;
+    border: 3px solid rgba(0, 255, 255, 0.3);
+    box-shadow: 
+        inset 0 0 100px rgba(0, 255, 255, 0.1),
+        0 0 100px rgba(0, 255, 255, 0.2);
 }
 
 .speedometer-inner {
@@ -155,65 +202,194 @@ body {
     border-radius: 50%;
     background: conic-gradient(
         from 180deg,
-        #ff4444 0deg 36deg,
-        #ffaa44 36deg 72deg,
-        #ffdd44 72deg 108deg,
-        #aaff44 108deg 144deg,
-        #44ff44 144deg 180deg,
-        #44ffaa 180deg 216deg,
-        #44aaff 216deg 252deg,
-        #4444ff 252deg 288deg,
-        #aa44ff 288deg 324deg,
-        #ff44aa 324deg 360deg
+        #ff0040 0deg 20deg,
+        #ff4080 20deg 40deg,
+        #ff80c0 40deg 60deg,
+        #00ffff 60deg 80deg,
+        #0080ff 80deg 100deg,
+        #0040ff 100deg 120deg,
+        #4000ff 120deg 140deg,
+        #8000ff 140deg 160deg,
+        #c000ff 160deg 180deg,
+        #ff00c0 180deg 200deg,
+        #ff0080 200deg 220deg,
+        #ff0040 220deg 240deg,
+        #ff4000 240deg 260deg,
+        #ff8000 260deg 280deg,
+        #ffff00 280deg 300deg,
+        #80ff00 300deg 320deg,
+        #00ff40 320deg 340deg,
+        #00ff80 340deg 360deg
     );
     display: flex;
     align-items: center;
     justify-content: center;
-    box-shadow: 0 0 30px rgba(0, 0, 0, 0.1);
+    box-shadow: 
+        inset 0 0 50px rgba(0, 255, 255, 0.3),
+        inset 0 0 100px rgba(0, 0, 0, 0.8),
+        0 0 0 2px rgba(0, 255, 255, 0.5),
+        0 0 0 4px rgba(0, 0, 0, 0.8);
+    animation: speedometerGlow 2s ease-in-out infinite alternate;
+}
+
+@keyframes speedometerGlow {
+    0% { 
+        box-shadow: 
+            inset 0 0 50px rgba(0, 255, 255, 0.3),
+            inset 0 0 100px rgba(0, 0, 0, 0.8),
+            0 0 0 2px rgba(0, 255, 255, 0.5),
+            0 0 0 4px rgba(0, 0, 0, 0.8),
+            0 0 30px rgba(0, 255, 255, 0.4);
+    }
+    100% { 
+        box-shadow: 
+            inset 0 0 80px rgba(0, 255, 255, 0.5),
+            inset 0 0 120px rgba(0, 0, 0, 0.9),
+            0 0 0 2px rgba(0, 255, 255, 0.8),
+            0 0 0 4px rgba(0, 0, 0, 0.8),
+            0 0 60px rgba(0, 255, 255, 0.8);
+    }
 }
 
 .speedometer-inner::before {
     content: '';
     position: absolute;
-    width: 80%;
-    height: 80%;
-    background: white;
+    width: 75%;
+    height: 75%;
+    background: radial-gradient(circle at center, rgba(0, 0, 0, 0.9) 0%, rgba(0, 0, 0, 0.95) 100%);
     border-radius: 50%;
-    box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.1);
+    box-shadow: 
+        inset 0 0 30px rgba(0, 255, 255, 0.2),
+        inset 0 0 60px rgba(0, 0, 0, 0.8),
+        0 0 0 1px rgba(0, 255, 255, 0.3);
+}
+
+.speedometer-inner::after {
+    content: '';
+    position: absolute;
+    width: 85%;
+    height: 85%;
+    top: 7.5%;
+    left: 7.5%;
+    background: conic-gradient(from 0deg, 
+        transparent 0deg, rgba(0, 255, 255, 0.1) 1deg, transparent 2deg,
+        transparent 8deg, rgba(0, 255, 255, 0.1) 9deg, transparent 10deg,
+        transparent 18deg, rgba(0, 255, 255, 0.1) 19deg, transparent 20deg,
+        transparent 28deg, rgba(0, 255, 255, 0.1) 29deg, transparent 30deg,
+        transparent 38deg, rgba(0, 255, 255, 0.1) 39deg, transparent 40deg,
+        transparent 48deg, rgba(0, 255, 255, 0.1) 49deg, transparent 50deg,
+        transparent 58deg, rgba(0, 255, 255, 0.1) 59deg, transparent 60deg,
+        transparent 68deg, rgba(0, 255, 255, 0.1) 69deg, transparent 70deg,
+        transparent 78deg, rgba(0, 255, 255, 0.1) 79deg, transparent 80deg,
+        transparent 88deg, rgba(0, 255, 255, 0.1) 89deg, transparent 90deg,
+        transparent 98deg, rgba(0, 255, 255, 0.1) 99deg, transparent 100deg,
+        transparent 108deg, rgba(0, 255, 255, 0.1) 109deg, transparent 110deg,
+        transparent 118deg, rgba(0, 255, 255, 0.1) 119deg, transparent 120deg,
+        transparent 128deg, rgba(0, 255, 255, 0.1) 129deg, transparent 130deg,
+        transparent 138deg, rgba(0, 255, 255, 0.1) 139deg, transparent 140deg,
+        transparent 148deg, rgba(0, 255, 255, 0.1) 149deg, transparent 150deg,
+        transparent 158deg, rgba(0, 255, 255, 0.1) 159deg, transparent 160deg,
+        transparent 168deg, rgba(0, 255, 255, 0.1) 169deg, transparent 170deg,
+        transparent 178deg, rgba(0, 255, 255, 0.1) 179deg, transparent 180deg,
+        transparent 188deg, rgba(0, 255, 255, 0.1) 189deg, transparent 190deg,
+        transparent 198deg, rgba(0, 255, 255, 0.1) 199deg, transparent 200deg,
+        transparent 208deg, rgba(0, 255, 255, 0.1) 209deg, transparent 210deg,
+        transparent 218deg, rgba(0, 255, 255, 0.1) 219deg, transparent 220deg,
+        transparent 228deg, rgba(0, 255, 255, 0.1) 229deg, transparent 230deg,
+        transparent 238deg, rgba(0, 255, 255, 0.1) 239deg, transparent 240deg,
+        transparent 248deg, rgba(0, 255, 255, 0.1) 249deg, transparent 250deg,
+        transparent 258deg, rgba(0, 255, 255, 0.1) 259deg, transparent 260deg,
+        transparent 268deg, rgba(0, 255, 255, 0.1) 269deg, transparent 270deg,
+        transparent 278deg, rgba(0, 255, 255, 0.1) 279deg, transparent 280deg,
+        transparent 288deg, rgba(0, 255, 255, 0.1) 289deg, transparent 290deg,
+        transparent 298deg, rgba(0, 255, 255, 0.1) 299deg, transparent 300deg,
+        transparent 308deg, rgba(0, 255, 255, 0.1) 309deg, transparent 310deg,
+        transparent 318deg, rgba(0, 255, 255, 0.1) 319deg, transparent 320deg,
+        transparent 328deg, rgba(0, 255, 255, 0.1) 329deg, transparent 330deg,
+        transparent 338deg, rgba(0, 255, 255, 0.1) 339deg, transparent 340deg,
+        transparent 348deg, rgba(0, 255, 255, 0.1) 349deg, transparent 350deg,
+        transparent 358deg, rgba(0, 255, 255, 0.1) 359deg, transparent 360deg);
+    border-radius: 50%;
+    pointer-events: none;
 }
 
 .speedometer-needle {
     position: absolute;
-    width: 4px;
-    height: 100px;
-    background: linear-gradient(to bottom, #333, #666);
-    border-radius: 2px;
+    width: 8px;
+    height: 140px;
+    background: linear-gradient(to bottom, 
+        #00ffff 0%, 
+        #0080ff 30%, 
+        #0040ff 60%, 
+        #4000ff 100%);
+    border-radius: 4px;
     transform-origin: bottom center;
     transform: rotate(-90deg);
-    transition: transform 1s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: transform 2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
     z-index: 10;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+    box-shadow: 
+        0 0 20px rgba(0, 255, 255, 0.8),
+        0 0 40px rgba(0, 255, 255, 0.6),
+        0 0 60px rgba(0, 255, 255, 0.4),
+        inset 0 0 10px rgba(255, 255, 255, 0.3);
+    animation: needlePulse 1.5s ease-in-out infinite alternate;
+    /* Perfect centering */
+    top: 50%;
+    left: 50%;
+    margin-top: -140px; /* Half of height to center the bottom */
+    margin-left: -4px; /* Half of width to center horizontally */
+}
+
+@keyframes needlePulse {
+    0% { 
+        box-shadow: 
+            0 0 20px rgba(0, 255, 255, 0.8),
+            0 0 40px rgba(0, 255, 255, 0.6),
+            0 0 60px rgba(0, 255, 255, 0.4),
+            inset 0 0 10px rgba(255, 255, 255, 0.3);
+    }
+    100% { 
+        box-shadow: 
+            0 0 40px rgba(0, 255, 255, 1),
+            0 0 80px rgba(0, 255, 255, 0.8),
+            0 0 120px rgba(0, 255, 255, 0.6),
+            inset 0 0 20px rgba(255, 255, 255, 0.5);
+    }
 }
 
 .speedometer-needle::before {
     content: '';
     position: absolute;
-    top: -10px;
-    left: -3px;
-    width: 10px;
-    height: 10px;
-    background: #333;
+    top: -16px;
+    left: -6px;
+    width: 20px;
+    height: 20px;
+    background: radial-gradient(circle at center, #00ffff 0%, #0080ff 50%, #0040ff 100%);
     border-radius: 50%;
+    box-shadow: 
+        0 0 20px rgba(0, 255, 255, 0.8),
+        0 0 40px rgba(0, 255, 255, 0.6),
+        inset 0 2px 4px rgba(255, 255, 255, 0.4);
+    border: 2px solid rgba(255, 255, 255, 0.3);
 }
 
 .speedometer-center {
     position: absolute;
-    width: 20px;
-    height: 20px;
-    background: #333;
+    width: 32px;
+    height: 32px;
+    background: radial-gradient(circle at center, #00ffff 0%, #0080ff 50%, #0040ff 100%);
     border-radius: 50%;
     z-index: 11;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+    box-shadow: 
+        0 0 30px rgba(0, 255, 255, 0.8),
+        0 0 60px rgba(0, 255, 255, 0.6),
+        inset 0 2px 4px rgba(255, 255, 255, 0.4);
+    border: 3px solid rgba(255, 255, 255, 0.3);
+    /* Perfect centering */
+    top: 50%;
+    left: 50%;
+    margin-top: -16px; /* Half of height */
+    margin-left: -16px; /* Half of width */
 }
 
 .speedometer-labels {
@@ -226,37 +402,75 @@ body {
 
 .speedometer-labels span {
     position: absolute;
-    font-weight: bold;
-    font-size: 14px;
-    color: #333;
+    font-weight: 800;
+    font-size: 18px;
+    color: #00ffff;
     transform: translate(-50%, -50%);
+    text-shadow: 
+        0 0 10px rgba(0, 255, 255, 0.8),
+        0 0 20px rgba(0, 255, 255, 0.6),
+        0 0 30px rgba(0, 255, 255, 0.4),
+        0 1px 3px rgba(0, 0, 0, 0.8);
+    font-family: 'Courier New', monospace;
+    letter-spacing: 1px;
 }
 
-.label-0 { top: 85%; left: 50%; }
-.label-25 { top: 70%; left: 75%; }
-.label-50 { top: 50%; left: 85%; }
-.label-75 { top: 30%; left: 75%; }
-.label-100 { top: 15%; left: 50%; }
-.label-125 { top: 30%; left: 25%; }
-.label-150 { top: 50%; left: 15%; }
-.label-200 { top: 70%; left: 25%; }
+.label-0 { top: 88%; left: 50%; }
+.label-50 { top: 75%; left: 22%; }
+.label-100 { top: 50%; left: 12%; }
+.label-150 { top: 25%; left: 22%; }
+.label-200 { top: 12%; left: 50%; }
+.label-250 { top: 25%; left: 78%; }
+.label-300 { top: 50%; left: 88%; }
 
 .speed-display {
-    font-size: 3rem;
-    font-weight: bold;
-    color: #667eea;
+    font-size: 5rem;
+    font-weight: 900;
+    background: linear-gradient(135deg, #00ffff, #0080ff, #0040ff, #4000ff);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
     text-align: center;
-    min-height: 60px;
+    min-height: 80px;
     display: flex;
     align-items: center;
     justify-content: center;
     flex-direction: column;
+    text-shadow: 
+        0 0 20px rgba(0, 255, 255, 0.8),
+        0 0 40px rgba(0, 255, 255, 0.6),
+        0 0 60px rgba(0, 255, 255, 0.4);
+    animation: speedGlow 1.5s ease-in-out infinite alternate;
+    font-family: 'Courier New', monospace;
+    letter-spacing: 2px;
+}
+
+@keyframes speedGlow {
+    0% { 
+        text-shadow: 
+            0 0 20px rgba(0, 255, 255, 0.8),
+            0 0 40px rgba(0, 255, 255, 0.6),
+            0 0 60px rgba(0, 255, 255, 0.4);
+    }
+    100% { 
+        text-shadow: 
+            0 0 40px rgba(0, 255, 255, 1),
+            0 0 80px rgba(0, 255, 255, 0.8),
+            0 0 120px rgba(0, 255, 255, 0.6);
+    }
 }
 
 .unit {
-    font-size: 2rem;
-    color: #666;
+    font-size: 2.5rem;
+    color: #00ffff;
     margin-top: 10px;
+    font-family: 'Courier New', monospace;
+    font-weight: 700;
+    text-shadow: 
+        0 0 10px rgba(0, 255, 255, 0.8),
+        0 0 20px rgba(0, 255, 255, 0.6),
+        0 0 30px rgba(0, 255, 255, 0.4);
+    letter-spacing: 1px;
 }
 
 #speedValue {

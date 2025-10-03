@@ -4,6 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ZapZap Speedtest Website</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
@@ -20,13 +23,12 @@
                     </div>
                     <div class="speedometer-labels">
                         <span class="label-0">0</span>
-                        <span class="label-25">25</span>
                         <span class="label-50">50</span>
-                        <span class="label-75">75</span>
                         <span class="label-100">100</span>
-                        <span class="label-125">125</span>
                         <span class="label-150">150</span>
                         <span class="label-200">200</span>
+                        <span class="label-250">250</span>
+                        <span class="label-300">300</span>
                     </div>
                 </div>
                 <div class="speed-display">
@@ -157,43 +159,87 @@
                 const needle = document.getElementById('speedometerNeedle');
                 if (!needle) return;
 
-                // Reset to 0 position
+                // Reset to 0 position with smooth animation
                 needle.style.transform = 'rotate(-90deg)';
-                needle.style.background = 'linear-gradient(to bottom, #333, #666)';
-                needle.style.transition = 'transform 0.5s ease-out';
+                needle.style.background = 'linear-gradient(to bottom, #2c3e50, #34495e, #7f8c8d)';
+                needle.style.transition = 'transform 1s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
                 
                 // Reset speed display
                 this.speedValue.textContent = '0';
+                this.speedValue.style.color = '#667eea';
+            }
+
+            startSpeedometerTest() {
+                const needle = document.getElementById('speedometerNeedle');
+                if (!needle) return;
+
+                // Start testing animation - needle moves back and forth
+                needle.style.transition = 'transform 0.8s cubic-bezier(0.4, 0, 0.2, 1)';
+                needle.style.background = 'linear-gradient(to bottom, #667eea, #764ba2, #f093fb)';
+                
+                // Animate needle during test with realistic speed range
+                this.testingInterval = setInterval(() => {
+                    // Random speed between 0-300 Mbps
+                    const randomSpeed = Math.random() * 300;
+                    const percentage = randomSpeed / 300;
+                    const randomAngle = -90 + (percentage * 180);
+                    needle.style.transform = `rotate(${randomAngle}deg)`;
+                }, 400);
+            }
+
+            stopSpeedometerTest() {
+                if (this.testingInterval) {
+                    clearInterval(this.testingInterval);
+                    this.testingInterval = null;
+                }
             }
 
             animateSpeedometer(mbps) {
                 const needle = document.getElementById('speedometerNeedle');
                 if (!needle) return;
 
-                // Convert Mbps to degrees (0-200 Mbps range)
+                // Stop testing animation
+                this.stopSpeedometerTest();
+
+                // Convert Mbps to degrees (0-300 Mbps range)
                 // -90deg to 90deg rotation (180 degrees total)
-                const maxSpeed = 200;
+                // 0 Mbps = -90deg (left), 150 Mbps = 0deg (top), 300 Mbps = 90deg (right)
+                const maxSpeed = 300;
                 const clampedSpeed = Math.min(mbps, maxSpeed);
                 const percentage = clampedSpeed / maxSpeed;
                 const degrees = -90 + (percentage * 180);
                 
+                console.log(`Speed: ${mbps} Mbps, Percentage: ${(percentage * 100).toFixed(1)}%, Degrees: ${degrees.toFixed(1)}°`);
+                
+                // Smooth animation to final position
+                needle.style.transition = 'transform 2s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
                 needle.style.transform = `rotate(${degrees}deg)`;
                 
-                // Add a little bounce effect
-                needle.style.transition = 'transform 1s cubic-bezier(0.4, 0, 0.2, 1)';
-                
-                // Change needle color based on speed
+                // Change color based on speed with modern gradients
                 if (mbps < 25) {
-                    needle.style.background = 'linear-gradient(to bottom, #ff4444, #ff6666)';
+                    needle.style.background = 'linear-gradient(to bottom, #ff4757, #ff6b35)';
                 } else if (mbps < 50) {
-                    needle.style.background = 'linear-gradient(to bottom, #ffaa44, #ffcc66)';
+                    needle.style.background = 'linear-gradient(to bottom, #ff6b35, #feca57)';
                 } else if (mbps < 100) {
-                    needle.style.background = 'linear-gradient(to bottom, #ffdd44, #ffee66)';
+                    needle.style.background = 'linear-gradient(to bottom, #feca57, #48dbfb)';
                 } else if (mbps < 150) {
-                    needle.style.background = 'linear-gradient(to bottom, #aaff44, #ccff66)';
+                    needle.style.background = 'linear-gradient(to bottom, #48dbfb, #0abde3)';
+                } else if (mbps < 200) {
+                    needle.style.background = 'linear-gradient(to bottom, #0abde3, #006ba6)';
                 } else {
-                    needle.style.background = 'linear-gradient(to bottom, #44ff44, #66ff66)';
+                    needle.style.background = 'linear-gradient(to bottom, #006ba6, #3742fa)';
                 }
+
+                // Add final bounce effect
+                setTimeout(() => {
+                    needle.style.transition = 'transform 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55)';
+                    const bounceAngle = degrees + (Math.random() - 0.5) * 3;
+                    needle.style.transform = `rotate(${bounceAngle}deg)`;
+                    
+                    setTimeout(() => {
+                        needle.style.transform = `rotate(${degrees}deg)`;
+                    }, 300);
+                }, 2000);
             }
 
             displayResults(result) {
@@ -239,8 +285,9 @@
                 this.speedDisplay.classList.remove('hidden');
                 this.progressContainer.classList.add('hidden');
                 
-                // Reset speedometer
+                // Reset speedometer and start testing animation
                 this.resetSpeedometer();
+                this.startSpeedometerTest();
 
                 // Use sensible defaults for better user experience
                 const urlCount = 6; // Good balance of accuracy and speed
@@ -313,6 +360,10 @@
                 this.stopBtn.disabled = true;
                 this.showStatus('Test stopped by user', 'info');
                 this.progressContainer.classList.add('hidden');
+                
+                // Stop speedometer testing animation
+                this.stopSpeedometerTest();
+                this.resetSpeedometer();
             }
 
         }
